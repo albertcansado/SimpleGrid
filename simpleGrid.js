@@ -2,7 +2,7 @@
 /* exported simpleGrid */
 /*!
 	simpleGrid.js - v: 0.1 - 2015-21-08
-  
+
   	2015 Albert Cansado Sola; Licensed MIT
 */
 (function (root, factory) {
@@ -263,20 +263,20 @@
     };
 
     Number.prototype.formatMoney = function(c, d, t){
-        c = isNaN(c = Math.abs(c)) ? 2 : c; 
-        d = utils.isUndefined(d) ? "." : d; 
-        t = utils.isUndefined(t) ? "," : t; 
-        
+        c = isNaN(c = Math.abs(c)) ? 2 : c;
+        d = utils.isUndefined(d) ? "." : d;
+        t = utils.isUndefined(t) ? "," : t;
+
         var n = this,
-            s = n < 0 ? "-" : "", 
-            i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", 
+            s = n < 0 ? "-" : "",
+            i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "",
             j = (j = i.length) > 3 ? j % 3 : 0;
-        
+
         return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
     };
 
     var defaults = {
-        selector: ".js-jttable",
+        selector: ".js-simpleGrid",
         emptyText: "Nada :(",
         removeText: 'Are you sure you want to delete this row?',
         icons: {
@@ -285,8 +285,8 @@
             cancel: '',
             save: ''
         },
-        oddClass: 'jt-odd',
-        evenClass: 'jt-even',
+        oddClass: 'sg-odd',
+        evenClass: 'sg-even',
         headers: [],
         allowEmpty: true,
         actions: {
@@ -294,8 +294,8 @@
             edit: true,
             remove: true
         },
-        columns: [],
-        sorting: true,
+        columns: {},
+        sorting: true
     };
 
     var simpleGrid = function () {
@@ -367,14 +367,14 @@
 
     simpleGrid.prototype.init = function () {
         this.table = this.el.querySelector('table');
-        this.emptyRow = this.table.querySelector('.jt-empty-row');
-        this.addBtn = this.el.querySelector('.jt-add');
-        this.saveInput = this.el.querySelector('.jt-textarea');
+        this.emptyRow = this.table.querySelector('.sg-empty-row');
+        this.addBtn = this.el.querySelector('.sg-add');
+        this.saveInput = this.el.querySelector('.sg-textarea');
 
         if (utils.isNull(this.table) || utils.isNull(this.emptyRow) || utils.isNull(this.saveInput)) {
             throw "init elements are wrong";
         }
-        
+
         // Get num th
         this.config('cols', this.table.querySelectorAll('th').length);
 
@@ -386,19 +386,19 @@
 
         // Check if sorting
         if (this.config('sorting') && (window.jQuery && jQuery.tableDnD)) {
-            this.orderBtn = this.el.querySelector('.jt-order');
+            this.orderBtn = this.el.querySelector('.sg-order');
             this._sorting();
         } else {
             this.config('sorting', false);
         }
-        
+
         // Check Num rows
         var _numRows = this.table.rows.length;
         this.config('empty', (_numRows === 1));
         this.nextId = _numRows - 1;
 
         this._toggleEmpty(!this.config('empty'));
-        
+
         this._attachEvents();
     };
 
@@ -432,7 +432,7 @@
     simpleGrid.prototype._setId = function() {
         var id = this.nextId;
         this.nextId += 1;
-        return 'jt' + id;
+        return 'sg' + id;
     };
 
     simpleGrid.prototype._isNew = function(tr) {
@@ -443,7 +443,7 @@
 
         return result;
     };
-    
+
     simpleGrid.prototype._attachEvents = function () {
         if (this._allow('add')) {
             utils.on(this.addBtn, 'click', this.onAddRow.bind(this));
@@ -455,9 +455,9 @@
 
         utils.on(this.table, 'keypress', this.onKeyPress.bind(this));
     };
-    
+
     simpleGrid.prototype._toggleEmpty = function (hide) {
-        utils[(Boolean(hide)) ? 'addClass' : 'removeClass'](this.emptyRow, 'jt-hidden');
+        utils[(Boolean(hide)) ? 'addClass' : 'removeClass'](this.emptyRow, 'sg-hidden');
     };
 
     simpleGrid.prototype._evenOddClass = function(el, index) {
@@ -482,7 +482,7 @@
         if (utils.isUndefined(this.tablednd)) {
             // Create
             this.tablednd = $(this.table).tableDnD({
-                onDragClass: 'jt-drag'
+                onDragClass: 'sg-drag'
             });
         } else {
             this.tablednd.tableDnDUpdate();
@@ -510,7 +510,7 @@
 
     simpleGrid.prototype._createEditBtn = function () {
         var btn = document.createElement('button');
-        btn.className = 'jt-btn jt-btn--edit';
+        btn.className = 'sg-btn sg-btn--edit';
         btn.onclick = this.onEditRow.bind(this);
         btn.innerHTML = '<img src="' + this.config('icons.edit') + '" alt="Edit">';
         btn.href = '#';
@@ -519,7 +519,7 @@
 
     simpleGrid.prototype._createDeleteBtn = function () {
         var btn = document.createElement('button');
-        btn.className = 'jt-btn jt-btn--delete';
+        btn.className = 'sg-btn sg-btn--delete';
         btn.onclick = this.onDeleteRow.bind(this);
         btn.innerHTML = '<img src="' + this.config('icons.remove') + '" alt="Delete">';
         return btn;
@@ -527,7 +527,7 @@
 
     simpleGrid.prototype._createCancelEditBtn = function () {
         var btn = document.createElement('button');
-        btn.className = 'jt-btn jt-btn--cancel';
+        btn.className = 'sg-btn sg-btn--cancel';
         btn.onclick = this.onCancelRow.bind(this);
         btn.innerHTML = '<img src="' + this.config('icons.cancel') + '" alt="Cancel">';
         return btn;
@@ -535,7 +535,7 @@
 
     simpleGrid.prototype._createSaveBtn = function () {
         var btn = document.createElement('button');
-        btn.className = 'jt-btn jt-btn--save';
+        btn.className = 'sg-btn sg-btn--save';
         utils.on(btn, 'click', this.onSaveRow.bind(this));
         btn.innerHTML = '<img src="' + this.config('icons.save') + '" alt="Save">';
         return btn;
@@ -543,7 +543,7 @@
 
     simpleGrid.prototype._createEditingDiv = function() {
         var div = document.createElement('div');
-        div.className = 'jt-options--edit';
+        div.className = 'sg-options--edit';
         div.appendChild(this._createSaveBtn());
         div.appendChild(this._createCancelEditBtn());
 
@@ -552,7 +552,7 @@
 
     simpleGrid.prototype._createNormalDiv = function() {
         var div = document.createElement('div');
-        div.className = 'jt-options';
+        div.className = 'sg-options';
         if (this._allow('edit')) {
             div.appendChild(this._createEditBtn());
         }
@@ -573,14 +573,14 @@
     simpleGrid.prototype._createInput = function (label, value) {
         var input = document.createElement('input');
         input.type = 'text';
-        input.className = 'jt-input';
+        input.className = 'sg-input';
         if (!utils.isUndefined(label)) {
             input.setAttribute('data-label', label);
         }
         if (!utils.isUndefined(value)) {
             input.value = value;
         }
-        
+
         return input;
     };
 
@@ -594,7 +594,7 @@
 
     simpleGrid.prototype.onAddRow = function (ev) {
         ev.preventDefault();
-        
+
         var isEmpty = this.config('empty');
         if (isEmpty) {
             this._toggleEmpty(isEmpty);
@@ -605,7 +605,7 @@
 
     simpleGrid.prototype.onEditRow = function (ev) {
         ev.preventDefault();
-        
+
         var tr = utils.getParent(ev.currentTarget, 'tr');
         if (tr) {
             tr.setAttribute('data-new', 0);
@@ -619,7 +619,7 @@
         if (!confirm(this.config('removeText'))) {
             return;
         }
-        
+
         var tr = utils.getParent(ev.currentTarget, 'tr');
         if (tr) {
             this.removeRow(tr);
@@ -630,7 +630,7 @@
 
     simpleGrid.prototype.onCancelRow = function(ev) {
         ev.preventDefault();
-        
+
         var tr = utils.getParent(ev.currentTarget, 'tr');
         var isNew = this._isNew(tr);
         if (isNew) {
@@ -656,7 +656,7 @@
             if (!utils.isEmpty(inputValue) && emptyProps) {
                 emptyProps = false;
             }
-            
+
             row[td.getAttribute('data-label')] = inputValue;
         }
 
@@ -706,7 +706,6 @@
     simpleGrid.prototype._toggleColumns = function(tr, edit) {
         edit = (utils.isUndefined(edit)) ? false : edit;
 
-        //var isNew = this._isNew(tr);
         var id = tr.getAttribute('data-id');
         for (var i = 0, j = this.config('cols') - 1; i < j; i++) {
             var label = this.config('headers.' + i);
@@ -725,12 +724,12 @@
             utils.insert(td, content);
         }
 
-        utils[(edit) ? 'addClass' : 'removeClass'](tr, 'jt-is-editing');
+        utils[(edit) ? 'addClass' : 'removeClass'](tr, 'sg-is-editing');
     };
 
     simpleGrid.prototype.addCell = function (tr, pos, label, html) {
         var td = tr.insertCell(pos);
-        td.className = 'jt-col jt-col' + pos.toString();
+        td.className = 'sg-col sg-col' + pos.toString();
         if (!utils.isUndefined(label)) {
             td.setAttribute('data-label', label);
         }
@@ -755,7 +754,7 @@
         if (utils.isUndefined(isNew)) {
             isNew = 1;
         }
-        
+
         try {
             var tr = this.table.insertRow(-1);
 
@@ -766,11 +765,10 @@
             this._createColums(tr, id);
 
             if (isNew) {
-                utils.addClass(tr, 'jt-is-editing');
+                utils.addClass(tr, 'sg-is-editing');
             }
 
         } catch (err) {
-            console.log(err);
             this.removeRow(tr);
             return false;
         }
@@ -782,7 +780,7 @@
             this.data(tr.getAttribute('data-id'), 'remove');
             this.table.deleteRow(tr.rowIndex - 1);
         } catch (err) {}
-        
+
         if (this.table.rows.length === 1) {
             this.config('empty', true);
             this.config('nextId', 0);

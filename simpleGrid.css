@@ -1,0 +1,45 @@
+/** Required CSS styles **/
+.sg-hidden {
+	display: none;
+}
+.sg-options {
+	display: block;
+}
+.sg-options--edit {
+	display: none;
+}
+.sg-is-editing .sg-options {
+	display: none;
+}
+.sg-is-editing .sg-options--edit {
+	display: block;
+}
+
+/** Other CSS used **/
+
+/* Buttons */
+.sg-add {}
+.sg-order{}
+
+/* Table */
+.sg-table {}
+.sg-empty-row {}
+
+.sg-col {}
+/* - colN (1..N-1) N number of columns */
+.sg-colN {}
+
+.sg-input {}
+
+.sg-btn {}
+.sg-btn--edit {}
+.sg-btn--delete {}
+.sg-btn--cancel {}
+.sg-btn--save {}
+
+.sg-is-editing {}
+
+.sg-drag {}
+
+/* Textarea */
+.sg-textarea {}
