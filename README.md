@@ -36,7 +36,7 @@
 </div>
 ```
 
-** JS & CSS **
+**JS & CSS**
 
 ```html
 <html>
