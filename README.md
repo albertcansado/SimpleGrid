@@ -1,6 +1,6 @@
 # SimpleGrid.js
 
-### Draft version, not finished
+### Readme not finished, draft version
 
 ## Usage:
 
